@@ -11,6 +11,9 @@ import java.util.UUID;
 @SuppressWarnings("rawtypes")
 @Repository
 public class UserRepository extends MainRepository<User> {
+    public UserRepository() {
+    }
+
     @Override
     protected String getDataPath() {
         return "src/main/java/com.example/data/users.json";
@@ -39,6 +42,7 @@ public class UserRepository extends MainRepository<User> {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to delete users.json");
         }
     }
+
 
 }
 
