@@ -1,0 +1,5 @@
+services:
+  app:
+    image: mini1_img
+    ports:
+      - "8080:8080"
