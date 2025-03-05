@@ -10,9 +10,6 @@ import java.util.UUID;
 @Repository
 @SuppressWarnings("rawtypes")
 public class OrderRepository extends MainRepository<Order> {
-<<<<<<< HEAD
-
-=======
     public OrderRepository() {}
 
     @Override
@@ -47,6 +44,5 @@ public class OrderRepository extends MainRepository<Order> {
         orders.removeIf(order -> order.getId().equals(orderId));
         saveAll(orders);
     }
->>>>>>> Kiro
 
 }

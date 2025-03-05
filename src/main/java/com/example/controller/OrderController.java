@@ -11,11 +11,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/order")
 public class OrderController {
-<<<<<<< HEAD
-
-   
-}
-=======
     @Autowired
     private final OrderService orderService;
 
@@ -48,4 +43,3 @@ public class OrderController {
         }
     }
 }
->>>>>>> Kiro

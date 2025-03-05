@@ -12,10 +12,6 @@ import java.util.UUID;
 @SuppressWarnings("rawtypes")
 public class OrderService extends MainService<Order> {
 
-<<<<<<< HEAD
-
-}
-=======
     @Autowired
     private final OrderRepository orderRepository;
 
@@ -43,4 +39,3 @@ public class OrderService extends MainService<Order> {
         orderRepository.deleteOrderById(orderId);
     }
 }
->>>>>>> Kiro
