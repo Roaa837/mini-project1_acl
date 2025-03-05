@@ -3,6 +3,7 @@ package com.example.service;
 import com.example.model.Cart;
 import com.example.model.Product;
 import com.example.repository.CartRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -11,6 +12,7 @@ import java.util.UUID;
 @SuppressWarnings("rawtypes")
 public class CartService {
 
+    @Autowired
     private final CartRepository cartRepository;
 
     public CartService(CartRepository cartRepository) {
