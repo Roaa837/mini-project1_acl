@@ -2,6 +2,7 @@ package com.example.model;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 
+
 @Component
 public class Product {
     private UUID id;
