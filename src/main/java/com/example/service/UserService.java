@@ -2,6 +2,7 @@ package com.example.service;
 
 import com.example.model.Cart;
 import com.example.model.Order;
+import com.example.model.Product;
 import com.example.model.User;
 import com.example.repository.CartRepository;
 import com.example.repository.UserRepository;
@@ -20,9 +21,11 @@ import java.util.UUID;
 public class UserService extends MainService<User> {
     @Autowired
     private final UserRepository userRepository;
+    @Autowired
     private  final CartService cartService;
     @Autowired
     private CartRepository cartRepository;
+
 
 
     public UserService(UserRepository userRepository, CartService cartService) {
@@ -33,7 +36,7 @@ public class UserService extends MainService<User> {
         return userRepository.addUser(user);
     }
     public ArrayList<User> getUsers() {
-        return new ArrayList<>(userRepository.findAll());
+        return new ArrayList<>(userRepository.getUsers());
     }
     public User getUserById(UUID userId)
     {
@@ -47,9 +50,17 @@ public class UserService extends MainService<User> {
     {
         userRepository.deleteUserById(userId);
     }
+
     public void addOrderToUser(UUID userId)
     {
-        //        i don't fully understand it
+       Cart cart =  cartService.getCartByUserId(userId);
+       if (cart == null){
+           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found");
+       }
+       double total_price = cart.getProducts().stream().mapToDouble(Product::getPrice).sum();
+       Order order = new Order(UUID.randomUUID(),userId,total_price,cart.getProducts());
+        userRepository.addOrderToUser(userId,order);
+        emptyCart(userId);
 
     }
     public void emptyCart(UUID userId)
@@ -61,6 +72,7 @@ public class UserService extends MainService<User> {
         cart.getProducts().clear();
         cartRepository.overrideData(cartRepository.getCarts());
     }
+
     public void removeOrderFromUser(UUID userId, UUID orderId){
         userRepository.removeOrderFromUser(userId, orderId);
     }

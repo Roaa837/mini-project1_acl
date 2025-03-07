@@ -42,10 +42,7 @@ public class UserRepository extends MainRepository<User> {
     }
     public User getUserById(UUID userId) {
         try {
-            // Step 1: Retrieve all users from JSON
-            List<User> users = findAll();
-
-            // Step 2: Find the user by ID
+            ArrayList<User> users = new ArrayList<>(findAll());
             return users.stream()
                     .filter(user -> user.getId().equals(userId))
                     .findFirst()

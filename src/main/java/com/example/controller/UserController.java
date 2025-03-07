@@ -123,6 +123,16 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to remove product from cart");
         }
     }
+    @PostMapping("/{userId}/checkout")
+    public String addOrderToUser(@PathVariable UUID userId){
+        try{
+            userService.addOrderToUser(userId);
+            return "User with ID " + userId + " was successfully added.";
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to add order to user");
+        }
 
+    }
 
 }
