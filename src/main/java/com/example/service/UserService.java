@@ -22,15 +22,13 @@ public class UserService extends MainService<User> {
     @Autowired
     private final UserRepository userRepository;
     @Autowired
-    private  final CartService cartService;
-    @Autowired
     private CartRepository cartRepository;
 
 
 
     public UserService(UserRepository userRepository, CartService cartService) {
         this.userRepository = userRepository;
-        this.cartService = cartService;
+
     }
     public User addUser(User user) {
         return userRepository.addUser(user);
@@ -53,7 +51,7 @@ public class UserService extends MainService<User> {
 
     public void addOrderToUser(UUID userId)
     {
-       Cart cart =  cartService.getCartByUserId(userId);
+       Cart cart =  cartRepository.getCartByUserId(userId);
        if (cart == null){
            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found");
        }
@@ -65,7 +63,7 @@ public class UserService extends MainService<User> {
     }
     public void emptyCart(UUID userId)
     {
-        Cart cart =  cartService.getCartById(userId);
+        Cart cart =  cartRepository.getCartById(userId);
         if (cart == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found for this user");
         }

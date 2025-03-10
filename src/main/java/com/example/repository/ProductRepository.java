@@ -19,10 +19,9 @@ public class ProductRepository extends MainRepository<Product> {
     public ProductRepository() {
     }
 
-
     @Override
     protected String getDataPath() {
-        return "src/main/java/com.example/data/products.json";
+        return "src/main/java/com/example/data/products.json";
     }
 
     @Override

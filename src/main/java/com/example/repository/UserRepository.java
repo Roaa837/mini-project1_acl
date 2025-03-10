@@ -14,19 +14,12 @@ import java.util.UUID;
 @SuppressWarnings("rawtypes")
 @Repository
 public class UserRepository extends MainRepository<User> {
-    private final Order order;
-    private final UserService userService;
-    private final User user;
-
-    public UserRepository(Order order, UserService userService, User user) {
-        this.order = order;
-        this.userService = userService;
-        this.user = user;
+    public UserRepository() {
     }
 
     @Override
     protected String getDataPath() {
-        return "src/main/java/com.example/data/users.json";
+        return "src/main/java/com/example/data/users.json";
     }
     @Override
     protected Class<User[]> getArrayType() {
