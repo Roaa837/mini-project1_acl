@@ -45,7 +45,7 @@ public class ProductRepository extends MainRepository<Product> {
 
             // Step 2: Find the product by ID
             return products.stream()
-                    .filter(product -> product.getId().equals(productId))
+                    .filter(product ->product!=null&& product.getId().equals(productId))
                     .findFirst()
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
         } catch (Exception e) {
@@ -73,7 +73,7 @@ public class ProductRepository extends MainRepository<Product> {
     public void deleteProductById(UUID productId){
         try{
             ArrayList<Product> products = findAll();
-            boolean removed = products.removeIf(product -> product.getId().equals(productId));
+            boolean removed = products.removeIf(product ->product!=null && product.getId().equals(productId));
            if (!removed) {
                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
            }
