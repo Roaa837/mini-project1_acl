@@ -87,43 +87,50 @@ public class UserController {
     @PutMapping("/addProductToCart")
     public String addProductToCart(@RequestParam UUID userId, @RequestParam UUID productId) {
         try {
-            Cart cart = cartService.getCartByUserId(userId);
-            System.out.println(cart);
-            if (cart == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found for user");
-            }
-
+            // Retrieve the product
             Product product = productService.getProductById(productId);
             if (product == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+                return "Product not found";
             }
 
+            Cart cart = cartService.getCartByUserId(userId);
+            if (cart == null) {
+
+                cart = new Cart(UUID.randomUUID(), userId, new ArrayList<>());
+                cartService.addCart(cart);
+            }
             cartService.addProductToCart(cart.getId(), product);
-            return "Product added to cart successfully!";
+            return "Product added to cart";
+
         } catch (Exception e) {
             e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to add product to cart");
+            return "Unable to add product to cart";
         }
     }
+
+
     @PutMapping("/deleteProductFromCart")
-    public String deleteProductFromCart(@RequestParam UUID userId, @RequestParam UUID productId){
-        try{
+    public String deleteProductFromCart(@RequestParam UUID userId, @RequestParam UUID productId) {
+        try {
             Cart cart = cartService.getCartByUserId(userId);
-            if (cart == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found for user");
+            if (cart == null || cart.getProducts().isEmpty()) {
+                return "Cart is empty";
             }
+
             Product product = productService.getProductById(productId);
             if (product == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+                return "Product not found";
             }
+
             cartService.deleteProductFromCart(cart.getId(), product);
+            Cart updatedCart = cartService.getCartByUserId(userId);
             return "Product deleted from cart";
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to remove product from cart");
         }
     }
+
     @PostMapping("/{userId}/checkout")
     public String addOrderToUser(@PathVariable UUID userId){
         try{

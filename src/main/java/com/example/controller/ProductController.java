@@ -1,5 +1,4 @@
 package com.example.controller;
-
 import com.example.model.Product;
 import com.example.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,11 +46,29 @@ public class ProductController {
     }
 
     @PutMapping("/update/{productId}")
-    public Product updateProduct(@PathVariable UUID productId, @RequestBody Map<String,Object> body) {
-        String newName = (String) body.get("name");
-        double newPrice = (double) body.get("price");
+    public Product updateProduct(@PathVariable UUID productId, @RequestBody Map<String, Object> body) {
+        System.out.println("Received request body: " + body);  // Debugging output
+
+        if (body == null || !body.containsKey("newName") || !body.containsKey("newPrice")) {
+            throw new IllegalArgumentException("Missing required fields: newName or newPrice");
+        }
+
+        String newName = (String) body.get("newName");
+        Object priceObj = body.get("newPrice");
+
+        // Ensure price is convertible to double
+        double newPrice;
+        try {
+            newPrice = Double.parseDouble(priceObj.toString());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid price value");
+        }
+
         return productService.updateProduct(productId, newName, newPrice);
     }
+
+
+
 
     @PutMapping("/applyDiscount")
     public String applyDiscount(@RequestParam double discount,@RequestBody ArrayList<UUID> productIds) {
@@ -63,3 +80,4 @@ public class ProductController {
         }
     }
 }
+
