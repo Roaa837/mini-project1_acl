@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.model.Cart;
 import com.example.model.Order;
+import com.example.model.Product;
+import com.example.repository.CartRepository;
+import com.example.repository.OrderRepository;
 import com.example.service.CartService;
 import com.example.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,22 +27,35 @@ public class TestCases_F {
     private CartService cartService;
 
     @Autowired
+    private CartRepository cartRepository;
+
+    @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     private Cart cart;
     private UUID cartId;
+
     private UUID userId;
 
     private Order order;
     private UUID orderId;
 
+    private Product product;
+    private UUID productId;
+
     @BeforeEach
     void setUp() {
         cartId = UUID.randomUUID();
         userId = UUID.randomUUID();
-        cart = new Cart(cartId, userId, new ArrayList<>());
         orderId = UUID.randomUUID();
+        productId = UUID.randomUUID();
+
+        cart = new Cart(cartId, userId, new ArrayList<>());
         order = new Order(orderId, userId, 250.0, new ArrayList<>());
+        product = new Product(productId, "v-cola", 21.50);
     }
 
     // Cart
@@ -50,11 +66,9 @@ public class TestCases_F {
     }
 
     @Test
-    void testGetCartsFailure() {
-        //cartService.clearCarts();
-
+    void testGetCarts() {
+        cartRepository.overrideData(new ArrayList<>());
         ArrayList<Cart> result = cartService.getCarts();
-
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
@@ -74,18 +88,60 @@ public class TestCases_F {
     }
 
     @Test
-    void testDeleteCartById() {
-        UUID invalidId = UUID.randomUUID();
-        cartService.deleteCartById(invalidId);
-        Cart result = cartService.getCartById(invalidId);
-        assertNull(result);
+    void testAddProductToCart() {
+        cartService.addCart(cart);
+        int size = cart.getProducts().size();
+        cartService.addProductToCart(cart.getId(),null);
+        Cart newCart = cartService.getCartById(cart.getId());
+        int newSize = newCart.getProducts().size();
+        assertEquals(size, newSize);
     }
 
-    // Order
-//    @Test
-//    void testAddOrder() {
-//        orderService.addOrder(null);
-//    }
+    @Test
+    void testDeleteProductFromCart() {
+        cartService.addCart(cart);
+        int oldSize = cart.getProducts().size();
+        cartService.deleteProductFromCart(cart.getId(),new Product(UUID.randomUUID(), "v-cola", 21.50));
+        Cart newCart = cartService.getCartById(cart.getId());
+        int newSize = newCart.getProducts().size();
+        assertEquals(oldSize, newSize);
+    }
+
+    @Test
+    void testDeleteCartById() {
+        ArrayList<Cart> cartsBeforeDelete = cartService.getCarts();
+        int sizeBeforeDelete = cartsBeforeDelete.size();
+
+        UUID invalidId = UUID.randomUUID();
+        cartService.deleteCartById(invalidId);
+
+        ArrayList<Cart> cartsAfterDelete = cartService.getCarts();
+        int sizeAfterDelete = cartsAfterDelete.size();
+
+        assertEquals(sizeBeforeDelete, sizeAfterDelete);
+    }
+
+//    Order
+    @Test
+    void testAddOrder() {
+        ArrayList<Order> ordersBeforeAdd = orderService.getOrders();
+        int sizeBeforeAdd = ordersBeforeAdd.size();
+
+        orderService.addOrder(null);
+
+        ArrayList<Order> ordersAfterAdd = orderService.getOrders();
+        int sizeAfterAdd = ordersAfterAdd.size();
+
+        assertEquals(sizeBeforeAdd, sizeAfterAdd);
+    }
+
+    @Test
+    void testGetOrders() {
+        orderRepository.overrideData(new ArrayList<>());
+        ArrayList<Order> result = orderService.getOrders();
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
 
     @Test
     void testGetOrderById() {

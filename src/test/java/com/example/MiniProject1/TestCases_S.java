@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.model.Cart;
 import com.example.model.Order;
+import com.example.model.Product;
 import com.example.service.CartService;
 import com.example.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,18 +29,25 @@ public class TestCases_S {
 
     private Cart cart;
     private UUID cartId;
+
     private UUID userId;
 
     private Order order;
     private UUID orderId;
 
+    private Product product;
+    private UUID productId;
+
     @BeforeEach
     void setUp() {
         cartId = UUID.randomUUID();
         userId = UUID.randomUUID();
-        cart = new Cart(cartId, userId, new ArrayList<>());
         orderId = UUID.randomUUID();
+        productId = UUID.randomUUID();
+
+        cart = new Cart(cartId, userId, new ArrayList<>());
         order = new Order(orderId, userId, 250.0, new ArrayList<>());
+        product = new Product(productId, "v-cola", 21.50);
     }
 
     // cart
@@ -89,13 +97,27 @@ public class TestCases_S {
         assertEquals(cart.getId(), result.getId());
     }
 
-//    @Test
-//    void testAddProductToCart() {
-//    }
-//
-//    @Test
-//    void testDeleteProductFromCart() {
-//    }
+    @Test
+    void testAddProductToCart() {
+        cartService.addCart(cart);
+        int size = cart.getProducts().size();
+        cartService.addProductToCart(cart.getId(),product);
+        Cart newCart = cartService.getCartById(cart.getId());
+        int newSize = newCart.getProducts().size();
+        assertEquals(size + 1, newSize);
+    }
+
+    @Test
+    void testDeleteProductFromCart() {
+        cartService.addCart(cart);
+        cartService.addProductToCart(cart.getId(),product);
+        Cart oldCart = cartService.getCartById(cart.getId());
+        int oldSize = oldCart.getProducts().size();
+        cartService.deleteProductFromCart(cart.getId(),product);
+        Cart newCart = cartService.getCartById(cart.getId());
+        int newSize = newCart.getProducts().size();
+        assertEquals(oldSize, newSize + 1);
+    }
 
     @Test
     void testDeleteCartById() {
@@ -110,29 +132,12 @@ public class TestCases_S {
     // order
     @Test
     void testAddOrder() {
+        Order theOrder = orderService.getOrderById(order.getId());
+        assertNull(theOrder);
         orderService.addOrder(order);
-
-        Order result = new Order();
-        ObjectMapper objectMapper = new ObjectMapper();
-        ArrayList<Order> ordersInJsonFile = new ArrayList<>();
-        try {
-            File file = new File("src/main/java/com/example/data/orders.json");
-            if (file.exists()) {
-                Order[] ordersArray = objectMapper.readValue(file, Order[].class);
-                ordersInJsonFile = new ArrayList<>(Arrays.asList(ordersArray));
-
-                for (Order o : ordersInJsonFile) {
-                    if (o.getId().equals(order.getId())) {
-                        result = order;
-                        break;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            fail("Failed to load orders from JSON file: " + e.getMessage());
-        }
-
-        assertEquals(result.getId(), order.getId());
+        theOrder = orderService.getOrderById(order.getId());
+        assertNotNull(theOrder);
+        assertEquals(theOrder.getId(), order.getId());
     }
 
     @Test

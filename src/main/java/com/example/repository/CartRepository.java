@@ -54,6 +54,9 @@ public class CartRepository extends MainRepository<Cart> {
     }
 
     public void addProductToCart(UUID cartId, Product product) {
+        if(product == null){
+            return;
+        }
         ArrayList<Cart> carts = findAll();
         for (Cart cart : carts) {
             if (cart.getId().equals(cartId)) {
@@ -65,6 +68,9 @@ public class CartRepository extends MainRepository<Cart> {
     }
 
     public void deleteProductFromCart(UUID cartId, Product product) {
+        if(product == null){
+            return;
+        }
         ArrayList<Cart> carts = findAll();
         for (Cart cart : carts) {
             if (cart.getId().equals(cartId)) {
@@ -79,6 +85,5 @@ public class CartRepository extends MainRepository<Cart> {
         ArrayList<Cart> carts = findAll();
         carts.removeIf(cart -> cart != null && cart.getId().equals(cartId));
         saveAll(carts);
-
     }
 }
