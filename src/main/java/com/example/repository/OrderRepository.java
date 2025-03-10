@@ -1,10 +1,12 @@
 package com.example.repository;
 
+import com.example.model.Cart;
 import com.example.model.Order;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -23,9 +25,11 @@ public class OrderRepository extends MainRepository<Order> {
     }
 
     public void addOrder(Order order) {
-        ArrayList<Order> orders = findAll();
-        orders.add(order);
-        saveAll(orders);
+        if(order != null){
+            ArrayList<Order> orders = findAll();
+            orders.add(order);
+            saveAll(orders);
+        }
     }
 
     public ArrayList<Order> getOrders() {
@@ -34,14 +38,14 @@ public class OrderRepository extends MainRepository<Order> {
 
     public Order getOrderById(UUID orderId) {
         return findAll().stream()
-                .filter(order -> order.getId().equals(orderId))
+                .filter(order -> order !=null && order.getId().equals(orderId))
                 .findFirst()
                 .orElse(null);
     }
 
     public void deleteOrderById(UUID orderId) {
         ArrayList<Order> orders = findAll();
-        orders.removeIf(order -> order.getId().equals(orderId));
+        orders.removeIf(order -> order!=null && order.getId().equals(orderId));
         saveAll(orders);
     }
 
