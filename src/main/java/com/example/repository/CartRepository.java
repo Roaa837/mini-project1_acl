@@ -63,7 +63,7 @@ public class CartRepository extends MainRepository<Cart> {
         ArrayList<Cart> carts = findAll();
         for (Cart cart : carts) {
             if (cart.getId().equals(cartId)) {
-                cart.getProducts().removeIf(p -> p.equals(product));
+                cart.getProducts().removeIf(p -> p.getId().equals(product.getId()));
                 saveAll(carts);
                 return;
             }

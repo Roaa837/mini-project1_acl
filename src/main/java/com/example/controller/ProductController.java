@@ -40,7 +40,7 @@ public class ProductController {
     public String deleteProductById(@PathVariable UUID productId) {
         try {
             productService.deleteProductById(productId);
-            return "Product with ID " + productId + " was successfully deleted.";
+            return "Product deleted successfully";
         } catch (Exception e) {
             return "Error deleting product with ID " + productId + ": " + e.getMessage();
         }
@@ -57,7 +57,7 @@ public class ProductController {
     public String applyDiscount(@RequestParam double discount,@RequestBody ArrayList<UUID> productIds) {
         try {
             productService.applyDiscount(discount, productIds);
-            return "Discount applied successfully.";
+            return "Discount applied successfully";
         } catch (Exception e) {
             return "Error applying discount: " + e.getMessage();
         }

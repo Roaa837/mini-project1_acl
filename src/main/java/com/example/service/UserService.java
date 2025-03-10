@@ -26,8 +26,10 @@ public class UserService extends MainService<User> {
 
 
 
-    public UserService(UserRepository userRepository, CartService cartService) {
+
+    public UserService(UserRepository userRepository, CartRepository cartRepository) {
         this.userRepository = userRepository;
+        this.cartRepository = cartRepository;
 
     }
     public User addUser(User user) {
@@ -63,7 +65,8 @@ public class UserService extends MainService<User> {
     }
     public void emptyCart(UUID userId)
     {
-        Cart cart =  cartRepository.getCartById(userId);
+        Cart cart = cartRepository.getCartByUserId(userId);
+
         if (cart == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found for this user");
         }

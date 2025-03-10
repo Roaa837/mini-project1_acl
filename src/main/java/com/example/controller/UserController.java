@@ -59,9 +59,9 @@ public class UserController {
     public String deleteUserById(@PathVariable UUID userId) {
         try {
             userService.deleteUserById(userId);
-            return "User with ID " + userId + " was successfully deleted.";
+            return "User deleted successfully";
         } catch (Exception e) {
-            return "Error deleting user with ID " + userId + ": " + e.getMessage();
+            return "User not found";
         }
     }
     @PostMapping("/{userId}/removeOrder")
@@ -69,7 +69,7 @@ public class UserController {
     {
         try{
             userService.removeOrderFromUser(userId, orderId);
-            return "User with ID " + userId + " was successfully removed.";
+            return "Order removed successfully";
         }catch(Exception e){
             return "Error deleting user with ID " + userId + ": " + e.getMessage();
         }
@@ -79,7 +79,7 @@ public class UserController {
     public String emptyCart(@PathVariable UUID userId){
         try{
             userService.emptyCart(userId);
-            return "User with ID " + userId + " was successfully deleted.";
+            return "Cart emptied successfully";
         }catch (Exception e){
             return "Error deleting user with ID " + userId + ": " + e.getMessage();
         }
@@ -88,6 +88,7 @@ public class UserController {
     public String addProductToCart(@RequestParam UUID userId, @RequestParam UUID productId) {
         try {
             Cart cart = cartService.getCartByUserId(userId);
+            System.out.println(cart);
             if (cart == null) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found for user");
             }
@@ -116,7 +117,7 @@ public class UserController {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
             }
             cartService.deleteProductFromCart(cart.getId(), product);
-            return "Product deleted from cart successfully!";
+            return "Product deleted from cart";
         }
         catch (Exception e){
             e.printStackTrace();
@@ -127,7 +128,7 @@ public class UserController {
     public String addOrderToUser(@PathVariable UUID userId){
         try{
             userService.addOrderToUser(userId);
-            return "User with ID " + userId + " was successfully added.";
+            return "Order added successfully";
         } catch (RuntimeException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to add order to user");
