@@ -4,6 +4,7 @@ import com.example.model.Cart;
 import com.example.model.Product;
 import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,11 +25,15 @@ public class CartRepository extends MainRepository<Cart> {
     }
 
     public Cart addCart(Cart cart) {
+        if(cart == null){
+            return null;
+        }
         ArrayList<Cart> carts = findAll();
         carts.add(cart);
         saveAll(carts);
         return cart;
     }
+    //lesa
 
     public ArrayList<Cart> getCarts() {
         return findAll();
@@ -36,14 +41,14 @@ public class CartRepository extends MainRepository<Cart> {
 
     public Cart getCartById(UUID cartId) {
         return findAll().stream()
-                .filter(cart -> cart.getId().equals(cartId))
+                .filter(cart -> cart != null && cart.getId().equals(cartId))
                 .findFirst()
                 .orElse(null);
     }
 
     public Cart getCartByUserId(UUID userId) {
         return findAll().stream()
-                .filter(cart -> cart.getUserId().equals(userId))
+                .filter(cart -> cart != null && cart.getUserId().equals(userId))
                 .findFirst()
                 .orElse(null);
     }
@@ -72,7 +77,8 @@ public class CartRepository extends MainRepository<Cart> {
 
     public void deleteCartById(UUID cartId) {
         ArrayList<Cart> carts = findAll();
-        carts.removeIf(cart -> cart.getId().equals(cartId));
+        carts.removeIf(cart -> cart != null && cart.getId().equals(cartId));
         saveAll(carts);
+
     }
 }

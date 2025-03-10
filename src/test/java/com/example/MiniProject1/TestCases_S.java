@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.model.Cart;
 import com.example.model.Order;
-import com.example.repository.CartRepository;
 import com.example.service.CartService;
 import com.example.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,7 +18,7 @@ import java.util.Arrays;
 import java.util.UUID;
 
 @SpringBootTest
-public class TestCases {
+public class TestCases_S {
 
     @Autowired
     private CartService cartService;
@@ -52,7 +51,7 @@ public class TestCases {
     }
 
     @Test
-    void testGetCarts(){
+    void testGetCarts() {
         ObjectMapper objectMapper = new ObjectMapper();
         ArrayList<Cart> cartsInJsonFile = new ArrayList<>();
         try {
@@ -68,7 +67,7 @@ public class TestCases {
         ArrayList<Cart> result = cartService.getCarts();
         assertNotNull(result);
         assertEquals(result.size(), cartsInJsonFile.size());
-        for(int i=0;i<result.size();i++){
+        for (int i = 0; i < result.size(); i++) {
             assertEquals(result.get(i).getId(), cartsInJsonFile.get(i).getId());
         }
     }
@@ -89,6 +88,14 @@ public class TestCases {
         assertEquals(cart.getUserId(), result.getUserId());
         assertEquals(cart.getId(), result.getId());
     }
+
+//    @Test
+//    void testAddProductToCart() {
+//    }
+//
+//    @Test
+//    void testDeleteProductFromCart() {
+//    }
 
     @Test
     void testDeleteCartById() {
@@ -129,7 +136,7 @@ public class TestCases {
     }
 
     @Test
-    void testGetOrders(){
+    void testGetOrders() {
         ObjectMapper objectMapper = new ObjectMapper();
         ArrayList<Order> orderInJsonFile = new ArrayList<>();
         try {
@@ -145,7 +152,7 @@ public class TestCases {
         ArrayList<Order> result = orderService.getOrders();
         assertNotNull(result);
         assertEquals(result.size(), orderInJsonFile.size());
-        for(int i=0;i<result.size();i++){
+        for (int i = 0; i < result.size(); i++) {
             assertEquals(result.get(i).getId(), orderInJsonFile.get(i).getId());
         }
     }
