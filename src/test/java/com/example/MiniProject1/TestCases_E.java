@@ -28,12 +28,15 @@ public class TestCases_E {
 
     @Autowired
     private OrderRepository orderRepository;
+    @Autowired
+    private CartRepository cartRepository;
 
     @BeforeEach
     void setUp() {
 
     }
 
+    // cart
     @Test
     void addCart() {
         Cart cart = new Cart(UUID.randomUUID(), UUID.randomUUID(), new ArrayList<>());
@@ -43,142 +46,117 @@ public class TestCases_E {
     }
 
     @Test
-    void getCarts_ShouldReturnEmptyList_WhenNoCartsExist() {
-        CartService cartService = new CartService(new CartRepository()); // Fresh repository with no carts
+    void getCarts() {
+        cartRepository.overrideData(new ArrayList<>());
 
-        // Act
         ArrayList<Cart> result = cartService.getCarts();
 
-        // Assert
-        assertNotNull(result, "The result should not be null.");
-        assertTrue(result.isEmpty(), "The list should be empty when no carts exist.");
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
 
 
     @Test
-    void getCartById_NonExistentId() {
-        // Arrange
-        UUID nonExistentId = UUID.randomUUID();
+    void getCartById() {
+        UUID UnAvailableId = UUID.randomUUID();
 
-        // Act
-        Cart result = cartService.getCartById(nonExistentId);
+        Cart result = cartService.getCartById(UnAvailableId);
 
-        // Assert
         assertNull(result);
     }
 
     @Test
-    void getCartByUserId_MultipleCartsSameUser() {
-        // Arrange
+    void getCartByUserId() {
         UUID userId = UUID.randomUUID();
         Cart cart1 = new Cart(UUID.randomUUID(), userId, new ArrayList<>());
         Cart cart2 = new Cart(UUID.randomUUID(), userId, new ArrayList<>());
         cartService.addCart(cart1);
         cartService.addCart(cart2);
 
-        // Act
         Cart result = cartService.getCartByUserId(userId);
 
-        // Assert
         assertNotNull(result);
-        assertEquals(userId, result.getUserId()); // Ensures at least one is returned
+        assertEquals(userId, result.getUserId());
     }
 
     @Test
-    void addProductToCart_DuplicateProduct() {
-        // Arrange
+    void addProductToCart() {
         UUID cartId = UUID.randomUUID();
         Cart cart = new Cart(cartId, UUID.randomUUID(), new ArrayList<>());
         cartService.addCart(cart);
-        Product product = new Product(UUID.randomUUID(), "Laptop", 1500.0);
+
+        Product product = new Product(UUID.randomUUID(), "v-cola", 15.0);
+        cartService.addProductToCart(cartId, product);
         cartService.addProductToCart(cartId, product);
 
-        // Act
-        cartService.addProductToCart(cartId, product);
-
-        // Assert
         Cart result = cartService.getCartById(cartId);
         assertNotNull(result);
-        assertEquals(2, result.getProducts().size()); // Checks if duplicate products exist
+        assertEquals(2, result.getProducts().size());
     }
 
     @Test
-    void deleteProductFromCart_RemoveNonExistentProduct() {
-        // Arrange
+    void deleteProductFromCart() {
         UUID cartId = UUID.randomUUID();
         Cart cart = new Cart(cartId, UUID.randomUUID(), new ArrayList<>());
         cartService.addCart(cart);
-        Product product = new Product(UUID.randomUUID(), "Phone", 700.0);
 
-        // Act
+        Product product = new Product(UUID.randomUUID(), "I-Phone 15 pro", 75000.0);
+
         cartService.deleteProductFromCart(cartId, product);
 
-        // Assert
         Cart result = cartService.getCartById(cartId);
         assertNotNull(result);
         assertEquals(0, result.getProducts().size());
     }
 
     @Test
-    void deleteCartById_EmptyRepository() {
-        // Arrange
+    void deleteCartById() {
         UUID cartId = UUID.randomUUID();
 
-        // Act
         cartService.deleteCartById(cartId);
 
-        // Assert
         Cart result = cartService.getCartById(cartId);
         assertNull(result);
     }
 
-    //order
+    // order
     @Test
-    void addOrder_shouldHandleEmptyOrder() {
-        // Arrange
+    void addOrder() {
+        orderRepository.overrideData(new ArrayList<>());
         Order emptyOrder = new Order();
 
-        // Act
         orderService.addOrder(emptyOrder);
+
+        ArrayList<Order> orders = orderService.getOrders();
+        assertTrue(orders.size() == 1);
+    }
+
+    @Test
+    void getOrders() {
+        orderRepository.overrideData(new ArrayList<>());
+
         ArrayList<Order> orders = orderService.getOrders();
 
-        // Assert
-        assertTrue(orders.contains(emptyOrder), "Empty order should still be added");
+        assertNotNull(orders);
+        assertTrue(orders.isEmpty());
     }
 
     @Test
-    void getOrders_shouldReturnEmptyListWhenNoOrdersExist() {
-        // Arrange
-        orderRepository.overrideData(new ArrayList<>()); // Ensure repository is empty
+    void getOrderById() {
+        UUID UnAvailableId = UUID.randomUUID();
 
-        // Act
-        ArrayList<Order> orders = orderService.getOrders();
+        Order order = orderService.getOrderById(UnAvailableId);
 
-        // Assert
-        assertTrue(orders.isEmpty(), "Should return an empty list if no orders exist");
+        assertNull(order);
     }
 
     @Test
-    void getOrderById_shouldReturnNullForNonexistentOrder() {
-        // Arrange
-        UUID nonExistentId = UUID.randomUUID();
+    void deleteOrderById() {
+        UUID UnAvailableId = UUID.randomUUID();
 
-        // Act
-        Order order = orderService.getOrderById(nonExistentId);
-
-        // Assert
-        assertNull(order, "Should return null when order ID does not exist");
-    }
-
-    @Test
-    void deleteOrderById_shouldThrowExceptionWhenOrderDoesNotExist() {
-        // Arrange
-        UUID nonExistentId = UUID.randomUUID();
-
-        // Act & Assert
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            orderService.deleteOrderById(nonExistentId);
+            orderService.deleteOrderById(UnAvailableId);
         });
-        assertEquals("Order not found with ID: " + nonExistentId, exception.getMessage());
+        assertEquals("Order not found with ID: " + UnAvailableId, exception.getMessage());
     }
 }
