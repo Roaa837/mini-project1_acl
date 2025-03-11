@@ -63,18 +63,44 @@ public class UserService extends MainService<User> {
         emptyCart(userId);
 
     }
-    public void emptyCart(UUID userId)
-    {
+    public void emptyCart(UUID userId) {
         Cart cart = cartRepository.getCartByUserId(userId);
 
         if (cart == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found for this user");
         }
-        cart.getProducts().clear();
-        cartRepository.overrideData(cartRepository.getCarts());
+
+        // Get all carts from the repository
+        ArrayList<Cart> carts = cartRepository.getCarts();
+
+        // Find the cart in the repository and clear its products
+        for (Cart c : carts) {
+            if (c.getUserId().equals(userId)) {
+                c.getProducts().clear(); // Clear the cart
+                break; // Stop after finding the cart
+            }
+        }
+
+        // Persist the updated carts list
+        cartRepository.overrideData(carts);
     }
 
-    public void removeOrderFromUser(UUID userId, UUID orderId){
-        userRepository.removeOrderFromUser(userId, orderId);
+
+    public void removeOrderFromUser(UUID userId, UUID orderId) {
+        // Retrieve all users
+        ArrayList<User> users = userRepository.findAll();
+
+        // Find the user by ID
+        for (User user : users) {
+            if (user.getId().equals(userId)) {
+                // Remove the order from the user's order list
+                user.getOrders().removeIf(order -> order.getId().equals(orderId));
+                break; // Stop after finding the user
+            }
+        }
+
+        // Save updated user data
+        userRepository.overrideData(users);
     }
+
 }

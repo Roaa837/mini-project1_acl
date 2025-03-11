@@ -37,7 +37,8 @@ public class UserRepository extends MainRepository<User> {
         try {
             ArrayList<User> users = new ArrayList<>(findAll());
             return users.stream()
-                    .filter(user -> user.getId().equals(userId))
+                    .filter(user ->user.getId()!= null &&
+                            user.getId().equals(userId))
                     .findFirst()
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         } catch (Exception e) {
@@ -75,21 +76,30 @@ public class UserRepository extends MainRepository<User> {
     }
     public void addOrderToUser(UUID userId, Order order) {
         try {
+            ArrayList<User> users = findAll(); // Load all users
 
-            ArrayList<User> users = findAll();
-            User user = getUserById(userId);
-            user.getOrders().add(order);
-            overrideData(users);
+            // Find the user in the list and update the orders
+            for (User user : users) {
+                if (user.getId().equals(userId)) {
+                    user.getOrders().add(order);
+                    break; // Stop after finding the user
+                }
+            }
+
+            overrideData(users); // Save the updated users list to file
+
+            System.out.println(getUserById(userId).getOrders()); // Debugging
         } catch (Exception e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to add order to users.json");
         }
     }
+
     public void removeOrderFromUser(UUID userId, UUID orderId) {
         try {
             ArrayList<User> users = findAll();
             User user = getUserById(userId);
-            boolean removed = user.getOrders().removeIf(order -> order.getId().equals(orderId));
+            boolean removed = user.getOrders().removeIf(order -> order.getId() != null &&order.getId().equals(orderId));
             if (!removed) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found for this user");
             }
@@ -103,18 +113,25 @@ public class UserRepository extends MainRepository<User> {
     }
     public void deleteUserById(UUID userId) {
         try {
-            ArrayList<User> users = findAll();
-            boolean removed = users.removeIf(user -> user.getId().equals(userId));
-            if (!removed) {
+            ArrayList<User> users = findAll(); // Load all users
+
+            // Ensure user exists before attempting to remove
+            boolean userExists = users.stream().anyMatch(user -> user.getId() != null && user.getId().equals(userId));
+            if (!userExists) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
             }
 
-            overrideData(users);
+            // Remove user safely
+            users.removeIf(user -> user.getId() != null && user.getId().equals(userId));
+
+            overrideData(users); // Save updated list
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to delete user from users.json");
         }
     }
+
 
 
 
