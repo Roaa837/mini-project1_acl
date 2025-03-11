@@ -38,7 +38,7 @@ public class OrderRepository extends MainRepository<Order> {
 
     public Order getOrderById(UUID orderId) {
         return findAll().stream()
-                .filter(order -> order !=null && order.getId().equals(orderId))
+                .filter(order -> order != null && order.getId() != null && order.getId().equals(orderId))
                 .findFirst()
                 .orElse(null);
     }

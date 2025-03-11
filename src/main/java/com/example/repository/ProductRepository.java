@@ -39,13 +39,14 @@ public class ProductRepository extends MainRepository<Product> {
     }
 
     public Product getProductById(UUID productId) {
+        if (productId == null) {
+            throw new NullPointerException("Product ID cannot be null");
+        }
         try {
-            // Step 1: Retrieve all products from JSON
             List<Product> products = findAll();
 
-            // Step 2: Find the product by ID
             return products.stream()
-                    .filter(product ->product!=null&& product.getId().equals(productId))
+                    .filter(product ->product!=null && product.getId().equals(productId))
                     .findFirst()
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
         } catch (Exception e) {
@@ -57,12 +58,13 @@ public class ProductRepository extends MainRepository<Product> {
     public Product addProduct(Product product){
         try{
             ArrayList<Product> products = findAll();
-            if (product.getId() == null){
+            if (product != null && product.getId() == null){
                 product.setId(UUID.randomUUID());
             }
-
-            products.add(product);
-            overrideData(products);
+            if(product != null){
+                products.add(product);
+                overrideData(products);
+            }
             return product;
         } catch (Exception e){
             e.printStackTrace();
@@ -71,6 +73,9 @@ public class ProductRepository extends MainRepository<Product> {
     }
 
     public void deleteProductById(UUID productId){
+        if (productId == null) {
+            throw new NullPointerException("Product ID cannot be null");
+        }
         try{
             ArrayList<Product> products = findAll();
             boolean removed = products.removeIf(product ->product!=null && product.getId().equals(productId));
@@ -85,19 +90,28 @@ public class ProductRepository extends MainRepository<Product> {
         }
     }
 
-    public Product updateProduct(UUID productId, String newName, double newPrice){
-        try{
+    public Product updateProduct(UUID productId, String newName, double newPrice) {
+        if(productId == null || newName == null){
+            throw new NullPointerException("Product ID & product name have to be defined");
+        }
+        try {
             ArrayList<Product> products = findAll();
-            Product product = getProductById(productId);
+            Product product = products.stream()
+                    .filter(p -> p.getId().equals(productId))
+                    .findFirst()
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+
             product.setName(newName);
             product.setPrice(newPrice);
+
             overrideData(products);
             return product;
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to update product in products.json");
         }
     }
+
 
     public void applyDiscount(double discount, ArrayList<UUID> productIds){
         try{
